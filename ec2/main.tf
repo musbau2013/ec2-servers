@@ -12,13 +12,13 @@ resource "aws_security_group" "allow_ssh_and_mysql" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow MySQL (Port 3306)
-  # ingress {
-  #   from_port   = 3306
-  #   to_port     = 3306
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
+  Allow MySQL (Port 3306)
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   # # Allow outbound traffic (default behavior)
   # egress {
