@@ -5,12 +5,13 @@ variable "region" {
 }
 
 variable "env" {
-  description = "The VPC ID where the security group will be created"
+  description = "dev environment"
   type        = string
+  default = "dev"
 }
 
 variable "env-qa" {
-  description = "The VPC ID where the security group will be created"
+  description = "qa environment"
   type        = string
   default = "qa"
 }
