@@ -3,10 +3,10 @@ name: Terraform Deployment with Conditional Rollback
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
-  TF_WORKING_DIR: ./ec2/  # Path to your Terraform code
+  TF_WORKING_DIR: ./ec2  # Path to your Terraform configuration files
 
 jobs:
   plan:
@@ -30,13 +30,15 @@ jobs:
 
       - name: Initialize Terraform
         run: terraform init -backend-config="key=${{ github.sha }}.tfstate"
+        working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
+        working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Save Plan for Apply
         id: save_plan
-        run: echo "TF_PLAN_PATH=tfplan" >> $GITHUB_ENV
+        run: echo "TF_PLAN_PATH=${{ env.TF_WORKING_DIR }}/tfplan" >> $GITHUB_ENV
 
   apply:
     name: Terraform Apply with Conditional Rollback
@@ -65,6 +67,7 @@ jobs:
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve "$TF_PLAN_PATH"
+        working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Check Apply Success
         if: ${{ failure() }}
@@ -76,6 +79,7 @@ jobs:
         run: |
           echo "Starting Terraform Destroy to rollback..."
           terraform destroy -auto-approve
+        working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Notify Rollback
         if: ${{ failure() }}
