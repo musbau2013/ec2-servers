@@ -59,12 +59,12 @@ jobs:
           terraform_version: 1.5.5
 
       - name: Load Plan Path
-        run: echo "Using saved plan path: ${{ env.TF_PLAN_PATH }}"
+        run: |
+          echo "Using saved plan path: $TF_PLAN_PATH"
 
       - name: Terraform Apply
         id: apply
-        run: |
-          terraform apply -auto-approve "$TF_PLAN_PATH"
+        run: terraform apply -auto-approve "$TF_PLAN_PATH"
 
       - name: Check Apply Success
         if: ${{ failure() }}
