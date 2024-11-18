@@ -3,14 +3,14 @@ name: Terraform Deployment with Conditional Rollback
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   TF_WORKING_DIR: ./ec2  # Path to your Terraform configuration files
 
 jobs:
-  plan:
-    name: Terraform Plan
+  terraform:
+    name: Terraform Deployment with Conditional Rollback
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -26,47 +26,20 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.8.0  # Updated to match required_version
+          terraform_version: 1.8.0
 
       - name: Initialize Terraform
         run: terraform init -backend-config="key=${{ github.sha }}.tfstate"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Plan
+        id: plan
         run: terraform plan -out=tfplan
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Save Plan for Apply
         id: save_plan
         run: echo "TF_PLAN_PATH=${{ env.TF_WORKING_DIR }}/tfplan" >> $GITHUB_ENV
-
-  apply:
-    name: Terraform Apply with Conditional Rollback
-    needs: plan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.8.0  # Updated to match required_version
-
-      - name: Initialize Terraform
-        run: terraform init -backend-config="key=${{ github.sha }}.tfstate"
-        working-directory: ${{ env.TF_WORKING_DIR }}
-
-      - name: Load Plan Path
-        run: |
-          echo "Using saved plan path: $TF_PLAN_PATH"
 
       - name: Terraform Apply
         id: apply
@@ -87,10 +60,8 @@ jobs:
 
       - name: Notify Rollback
         if: ${{ failure() }}
-        run: |
-          echo "Rollback completed successfully."
+        run: echo "Rollback completed successfully."
 
       - name: Notify Success
         if: ${{ success() }}
-        run: |
-          echo "Terraform Apply completed successfully!"
+        run: echo "Terraform Apply completed successfully!"
