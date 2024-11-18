@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  TF_WORKING_DIR: ./terraform  # Path to your Terraform code
+  TF_WORKING_DIR: ./ec2  # Path to your Terraform code
 
 jobs:
   plan:
