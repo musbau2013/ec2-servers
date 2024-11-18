@@ -60,6 +60,10 @@ jobs:
         with:
           terraform_version: 1.8.0  # Updated to match required_version
 
+      - name: Initialize Terraform
+        run: terraform init -backend-config="key=${{ github.sha }}.tfstate"
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
       - name: Load Plan Path
         run: |
           echo "Using saved plan path: $TF_PLAN_PATH"
