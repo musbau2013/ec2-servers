@@ -37,6 +37,6 @@ resource "aws_instance" "my_ec2" {
   security_groups = [aws_security_group.allow_ssh_and_mysql.name] # Attach the security group
 
   tags = {
-    Name = "MyEC2Instance"
+    Name = "${var.env}-MyEC2Instance"
   }
 }
