@@ -23,6 +23,6 @@ variable "key_name" {
 }
 
 variable "env" {
-  description = "The VPC ID where the security group will be created"
+  description = "environment"
   type        = string
 }
