@@ -36,7 +36,8 @@ jobs:
 
       - name: Save Plan for Apply
         id: save_plan
-        run: echo "TF_PLAN_PATH=tfplan" >> $GITHUB_ENV
+        run: |
+            echo "TF_PLAN_PATH=tfplan" >> $GITHUB_ENV
 
   apply:
     name: Terraform Apply with Conditional Rollback
@@ -60,11 +61,12 @@ jobs:
 
       - name: Load Plan Path
         run: |
-          echo "Using saved plan path: $TF_PLAN_PATH"
+            echo "Using saved plan path: $TF_PLAN_PATH"
 
       - name: Terraform Apply
         id: apply
-        run: terraform apply -auto-approve "$TF_PLAN_PATH"
+        run: |
+            terraform apply -auto-approve "$TF_PLAN_PATH"
 
       - name: Check Apply Success
         if: ${{ failure() }}
