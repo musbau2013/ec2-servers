@@ -3,7 +3,7 @@ name: Terraform Deployment with Conditional Rollback
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   TF_WORKING_DIR: ./ec2  # Path to your Terraform configuration files
@@ -26,7 +26,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.5
+          terraform_version: 1.8.0  # Updated to match required_version
 
       - name: Initialize Terraform
         run: terraform init -backend-config="key=${{ github.sha }}.tfstate"
@@ -58,7 +58,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.5
+          terraform_version: 1.8.0  # Updated to match required_version
 
       - name: Load Plan Path
         run: |
