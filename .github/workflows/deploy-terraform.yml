@@ -3,7 +3,7 @@ name: Terraform Deployment with Conditional Rollback
 on:
   push:
     branches:
-      - main
+      - master
 
 env:
   TF_WORKING_DIR: ./ec2  # Path to your Terraform code
