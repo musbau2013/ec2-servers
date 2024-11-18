@@ -1,6 +1,6 @@
 # Create a Security Group
 resource "aws_security_group" "allow_ssh_and_mysql" {
-  name        = "allow_ssh_and_mysql"
+  name        = "${var.env}-allow_ssh_and_mysql"
   description = "Allow SSH and MySQL access"
   #vpc_id      = var.vpc_id  # Replace with your VPC ID if using a custom VPC
 
