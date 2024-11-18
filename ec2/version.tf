@@ -6,12 +6,16 @@ terraform {
       version = ">= 4.0"
     }
   }
+}
+
+terraform {
   backend "s3" {
     bucket = "integratedsolutions-123456"
     key = "terraform.tfstate"
     region = "us-east-1"
   }
 }
+
 
 provider "aws" {
   region = var.region
