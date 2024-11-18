@@ -11,7 +11,7 @@ terraform {
 terraform {
   backend "s3" {
     bucket = "integratedsolutions-123456"
-    key = "terraform.tfstate"
+    key = "state-capture/terraform.tfstate"
     region = "us-east-1"
   }
 }
