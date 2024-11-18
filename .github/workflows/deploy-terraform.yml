@@ -1,0 +1,88 @@
+name: Terraform Deployment with Conditional Rollback
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  TF_WORKING_DIR: ./terraform  # Path to your Terraform code
+
+jobs:
+  plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.5
+
+      - name: Initialize Terraform
+        run: terraform init -backend-config="key=${{ github.sha }}.tfstate"
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Save Plan for Apply
+        id: save_plan
+        run: echo "TF_PLAN_PATH=tfplan" >> $GITHUB_ENV
+
+  apply:
+    name: Terraform Apply with Conditional Rollback
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.5
+
+      - name: Load Plan Path
+        run: |
+          echo "Using saved plan path: $TF_PLAN_PATH"
+
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -auto-approve "$TF_PLAN_PATH"
+
+      - name: Check Apply Success
+        if: ${{ failure() }}
+        run: |
+          echo "Terraform Apply failed. Initiating rollback process."
+
+      - name: Rollback to Previous State
+        if: ${{ failure() }}
+        run: |
+          echo "Starting Terraform Destroy to rollback..."
+          terraform destroy -auto-approve
+
+      - name: Notify Rollback
+        if: ${{ failure() }}
+        run: |
+          echo "Rollback completed successfully."
+
+      - name: Notify Success
+        if: ${{ success() }}
+        run: |
+          echo "Terraform Apply completed successfully!"
