@@ -28,10 +28,10 @@ jobs:
         with:
           terraform_version: 1.8.0
 
-      - name: Create Plan Directory
-        run: |
-          mkdir -p ${{ env.TF_WORKING_DIR }}
-          echo "Directory created: ${{ env.TF_WORKING_DIR }}"
+      # - name: Create Plan Directory
+      #   run: |
+      #     mkdir -p ${{ env.TF_WORKING_DIR }}
+      #     echo "Directory created: ${{ env.TF_WORKING_DIR }}"
       
       - name: Initialize Terraform
         run: terraform init -backend-config="key=${{ github.sha }}.tfstate"
@@ -39,12 +39,12 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -out=${{ env.TF_WORKING_DIR }}/tfplan
+        run: terraform plan -out=tfplan
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Apply
         id: apply
-        run: terraform apply -auto-approve ${{ env.TF_WORKING_DIR }}/tfplan
+        run: terraform apply -auto-approve tfplan
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Check Apply Success
