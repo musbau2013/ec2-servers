@@ -34,16 +34,12 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -out=${{ env.TF_WORKING_DIR }}/tfplan
         working-directory: ${{ env.TF_WORKING_DIR }}
-
-      - name: Save Plan for Apply
-        id: save_plan
-        run: echo "TF_PLAN_PATH=${{ env.TF_WORKING_DIR }}/tfplan" >> $GITHUB_ENV
 
       - name: Terraform Apply
         id: apply
-        run: terraform apply -auto-approve "$TF_PLAN_PATH"
+        run: terraform apply -auto-approve ${{ env.TF_WORKING_DIR }}/tfplan
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Check Apply Success
