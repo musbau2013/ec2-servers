@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  TF_WORKING_DIR: ./ec2  # Path to your Terraform configuration files
+  TF_WORKING_DIR: .  # Path to your Terraform configuration files
 
 jobs:
   terraform:
