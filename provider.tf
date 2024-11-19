@@ -13,7 +13,8 @@ provider "aws" {
     tags = {
       Portfolio   = "ICX"
       Program     = "PEP"
-      Environment = var.env == "dev" ? "dev" : "${var.env-qa}"
+      Environment = var.env == "dev" ? "dev" : (var.env-qa == "qa" ? "qa" : "prod")
+    #   Environment = var.env == "dev" ? "dev" : "${var.env-qa}"
       Cost-Center = "80U677"
       Stakeholder = "Fred Yarur"
       PM          = "Tom T Frantz"
